@@ -21,7 +21,7 @@ class ProduitRepository extends ServiceEntityRepository
         parent::__construct($registry, Produit::class);
     }
 
-//    /**
+    //    /**
 //     * @return Produit[] Returns an array of Produit objects
 //     */
 //    public function findByExampleField($value): array
@@ -36,7 +36,7 @@ class ProduitRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Produit
+    //    public function findOneBySomeField($value): ?Produit
 //    {
 //        return $this->createQueryBuilder('p')
 //            ->andWhere('p.exampleField = :val')
@@ -48,24 +48,28 @@ class ProduitRepository extends ServiceEntityRepository
 
     public function filter($data)
     {
+        dd('filter called');
         $qb = $this->createQueryBuilder('p');
 
         if ($data['auteur']) {
             $qb->andWhere('p.auteur = :auteur')
-               ->setParameter('auteur', $data['auteur']);
+                ->setParameter('auteur', $data['auteur']);
         }
 
-        if ($data['prix']) {
+        if ($data['prix'] && strpos($data['prix'], '-') !== false) {
             [$min, $max] = explode('-', $data['prix']);
             $qb->andWhere('p.prix BETWEEN :min AND :max')
-               ->setParameter('min', $min)
-               ->setParameter('max', $max);
+                ->setParameter('min', $min)
+                ->setParameter('max', $max);
         }
 
         if ($data['date']) {
-            $qb->andWhere('p.date = :date')
-               ->setParameter('date', $data['date']);
+            $qb->andWhere('SUBSTRING(p.date, 1, 10) = :date')
+                ->setParameter('date', $data['date']->format('Y-m-d'));
         }
+
+        dump($qb->getQuery()->getSQL());
+        dump($qb->getQuery()->getParameters());
 
         return $qb->getQuery()->getResult();
     }

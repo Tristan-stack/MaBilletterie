@@ -9,13 +9,17 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Produit;
 
 class ProduitFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('auteur', TextType::class, [
+            ->add('auteur', EntityType::class, [
+                'class' => Produit::class,
+                'choice_label' => 'auteur', 
                 'required' => false,
             ])
             ->add('prix', ChoiceType::class, [

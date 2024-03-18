@@ -18,11 +18,26 @@ use App\Form\ProduitFilterType;
 #[Route('/produit')]
 class ProduitController extends AbstractController
 {
-    #[Route('/', name: 'app_produit_index', methods: ['GET'])]
-    public function index(ProduitRepository $produitRepository): Response
+    #[Route('/', name: 'app_produit_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, ProduitRepository $produitRepository): Response
     {
+        $form = $this->createForm(ProduitFilterType::class);
+        $form->handleRequest($request);
+        //dump($form->isSubmitted());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $produits = $produitRepository->filter($data);
+            
+
+            //return $this->redirectToRoute('app_produit_index');
+            return new Response();
+        } else {
+            $produits = $produitRepository->findAll();
+        }
+
         return $this->render('produit/index.html.twig', [
-            'produits' => $produitRepository->findAll(),
+            'produits' => $produits,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -158,24 +173,4 @@ class ProduitController extends AbstractController
 
         return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
     }
-
-    #[Route('/filtre', name: 'app_produit_filtre', methods: ['GET', 'POST'])]
-    public function filtre(Request $request, ProduitRepository $produitRepository): Response
-    {
-        $form = $this->createForm(ProduitFilterType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $produits = $produitRepository->filter($data);
-        } else {
-            $produits = $produitRepository->findAll();
-        }
-
-        return $this->render('produit/index.html.twig', [
-            'produits' => $produits,
-            'form' => $form->createView(),
-        ]);
-    }
-
 }

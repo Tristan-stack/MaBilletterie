@@ -5,9 +5,13 @@
 {% block body %}
 <h1>Produit index</h1>
 
-{{ form_start(form) }}
-{{ form_widget(form) }}
-{{ form_end(form) }}
+
+{% if form is defined %}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+{% endif %}
+
 
 <table class="table">
     <thead>
