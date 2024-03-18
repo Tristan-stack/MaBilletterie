@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produit index{% endblock %}
+
+{% block body %}
+<h1>Produit index</h1>
+
+{{ form_start(form) }}
+{{ form_widget(form) }}
+{{ form_end(form) }}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Titre</th>
+            <th>Auteur</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Img_produit</th>
+            <th>Nb_achat</th>
+            <th>Prix</th>
+            <th>actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for produit in produits %}
+        <tr>
+            <td>{{ produit.id }}</td>
+            <td>{{ produit.titre }}</td>
+            <td>{{ produit.auteur }}</td>
+            <td>{{ produit.description }}</td>
+            <td>{{ produit.category.titre }}</td>
+            <td>{{ produit.date ? produit.date|date('Y-m-d') : '' }}</td>
+            <td>{{ produit.heure ? produit.heure|date('H:i') : '' }}</td>
+            <td>{{ produit.imgProduit }}</td>
+            <td>{{ produit.nbAchat }}</td>
+            <td>{{ produit.prix }}</td>
+            <td>
+                <a href="{{ path('app_produit_show', {'id': produit.id}) }}">show</a>
+                {% if app.user and app.user.id == produit.user.id %}
+                <a href="{{ path('app_produit_edit', {'id': produit.id}) }}">edit</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="10">no records found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ path('app_produit_new') }}">Create new</a>
+{% endblock %}

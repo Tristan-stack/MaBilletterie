@@ -1,0 +1,18 @@
+{% block menu %}
+
+<nav>
+    <ul>
+        <li><a href="{{path('app_home')}} ">Accueil</a></li>
+        <li><a href="{{ path('app_produit_index') }}">Liste des produits</a></li>
+        <li><a href="{{ path('app_produit_new') }}">Ajouter un produit</a></li>
+        {# si lutilisateur est connécté on affiche le lien logout #}
+        {% if app.user %}
+        <li><a href="{{ path('app_account') }}">Mon compte</a></li>
+        <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+        {% else %}
+        <li><a href="{{ path('app_login') }}">Connexion</a></li>
+        {% endif %}
+    </ul>
+</nav>
+    
+{% endblock menu %}

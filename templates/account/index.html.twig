@@ -1,0 +1,17 @@
+{# templates/account/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte{% endblock %}
+
+{% block body %}
+<h1>Mon compte</h1>
+
+{# <img src="{{app.user.img_profil}}" alt=""> #}
+
+<p>Nom d'utilisateur : {{ app.user.pseudo }}</p>
+<p>Email : {{ app.user.email }}</p>
+
+
+{# Ajoutez ici d'autres champs que vous voulez afficher #}
+{% endblock %}
