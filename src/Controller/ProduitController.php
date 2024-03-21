@@ -14,24 +14,38 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Form\ProduitFilterType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 
 #[Route('/produit')]
 class ProduitController extends AbstractController
 {
+
     #[Route('/', name: 'app_produit_index', methods: ['GET', 'POST'])]
     public function index(Request $request, ProduitRepository $produitRepository): Response
     {
         $form = $this->createForm(ProduitFilterType::class);
         $form->handleRequest($request);
-        //dump($form->isSubmitted());
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
-            $produits = $produitRepository->filter($data);
-            
 
-            //return $this->redirectToRoute('app_produit_index');
-            return new Response();
+        // Initialiser les critères à null
+        $criteria = [
+            'prix' => null,
+            'date' => null,
+            'auteur' => null,
+        ];
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $criteria = $form->getData();
+            //dd($criteria);
+            // Rediriger vers une autre page qui affiche les éléments filtrés
+            return $this->redirectToRoute('app_produit_filtered', ['criteria' => $criteria]);
+        }
+
+        // Filtrer les produits uniquement si au moins un des critères de filtre est non vide
+        if (!empty ($criteria['prix']) || !empty ($criteria['date']) || !empty ($criteria['auteur'])) {
+            $produits = $produitRepository->findFilteredProducts($criteria);
         } else {
+            // Si aucun critère n'est spécifié, afficher tous les produits
             $produits = $produitRepository->findAll();
         }
 
@@ -40,6 +54,23 @@ class ProduitController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/filtered', name: 'app_produit_filtered')]
+    public function filtered(Request $request, ProduitRepository $produitRepository): Response
+    {
+        // Récupérer les critères de filtrage depuis la requête
+        $criteria = $request->query->get('criteria');
+
+        // Filtrer les produits en fonction des critères
+        $produits = $produitRepository->findFilteredProducts($criteria);
+
+        // Afficher les produits filtrés sur une nouvelle page
+        return $this->render('produit/filter.html.twig', [
+            'produits' => $produits,
+        ]);
+    }
+
+
 
     #[Route('/new', name: 'app_produit_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response

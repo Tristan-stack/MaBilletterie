@@ -10,32 +10,41 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use App\Entity\Produit;
+
 
 class ProduitFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+
+            ->add('id', EntityType::class, [
+                'class' => Produit::class,
+                'choice_label' => 'id',
+                'required' => false,
+                'label' => 'ID'
+            ])
+            ->add('prix', IntegerType::class, [
+                'required' => false,
+                'label' => 'Prix maximum'
+            ])
+            ->add('date', TextType::class, [
+                'required' => false,
+                'label' => 'Date'
+            ])
             ->add('auteur', EntityType::class, [
                 'class' => Produit::class,
-                'choice_label' => 'auteur', 
+                'choice_label' => 'auteur', // ou tout autre champ approprié de l'auteur
                 'required' => false,
+                'label' => 'Auteur'
             ])
-            ->add('prix', ChoiceType::class, [
-                'choices' => [
-                    'Moins de 50' => '0-50',
-                    '50 à 100' => '50-100',
-                    'Plus de 100' => '100+',
-                ],
-                'required' => false,
-            ])
-            ->add('date', DateType::class, [
-                'widget' => 'single_text',
-                'required' => false,
-            ])
-            ->add('filter', SubmitType::class, [
-                'attr' => ['class' => 'btn btn-primary'],
+            ->add('submit', SubmitType::class, [
+                'label' => 'Filtrer',
+                'attr' => ['class' => 'btn btn-primary']
             ]);
     }
 }
+
+

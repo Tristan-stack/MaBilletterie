@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Filtrer les produits{% endblock %}
+
+{% block body %}
+<h1>Filtrer les produits</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>titre</th>
+            <th>Prix</th>
+            <th>Date</th>
+            <th>Auteur</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for produit in produits %}
+        <tr>
+            <td>{{ produit.id }}</td>
+            <td>{{ produit.titre }}</td>
+            <td>{{ produit.prix }}</td>
+            <td>{{ produit.date|date('Y-m-d') }}</td>
+            <td>{{ produit.auteur }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
