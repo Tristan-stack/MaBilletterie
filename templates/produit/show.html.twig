@@ -46,15 +46,36 @@
     </tbody>
 </table>
 
-<a href="{{ path('app_produit_index') }}">back to list</a>
+<button onclick="confirmAddToCart('{{ path('app_panier_add', {'id': produit.id}) }}')">Ajouter au panier</button>
 
-
+<a href="{{ path('app_produit_index') }}">Retour à la liste</a>
 
 {% if app.user and app.user.id == produit.user.id %}
-<a href="{{ path('app_produit_edit', {'id': produit.id}) }}">edit</a>
+<a href="{{ path('app_produit_edit', {'id': produit.id}) }}">Modifier</a>
 {% endif %}
 
+{# {% include('produit/_delete_form.html.twig') %} #}
 
 
-{{ include('produit/_delete_form.html.twig') }}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    function confirmAddToCart(url) {
+        Swal.fire({
+            title: 'Voulez-vous aller au panier ou continuer vos achats ?',
+            showDenyButton: true,
+            confirmButtonText: `Aller au panier`,
+            denyButtonText: `Continuer les achats`,
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                // Si l'utilisateur clique sur "Aller au panier", redirigez-le vers la page du panier
+                window.location.href = url;
+            } else if (result.isDenied) {
+                // Si l'utilisateur clique sur "Continuer les achats", rechargez la page actuelle
+                window.location.reload();
+            }
+        })
+    }
+</script>
+
 {% endblock %}

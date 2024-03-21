@@ -35,7 +35,7 @@ class ProduitRepository extends ServiceEntityRepository
 
         // Filtrer par date si le critère est spécifié
         if (isset ($criteria['date']) && $criteria['date'] !== null) {
-            // Supposons que la date soit au format 'YYYY-MM-DD'
+            // la date soit au format 'YYYY-MM-DD'
             $queryBuilder
                 ->andWhere('p.date = :date')
                 ->setParameter('date', $criteria['date']);

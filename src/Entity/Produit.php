@@ -51,9 +51,13 @@ class Produit
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'produit', orphanRemoval: true)]
     private Collection $comment;
 
+    #[ORM\ManyToMany(targetEntity: Panier::class, mappedBy: 'produits')]
+    private Collection $paniers;
+
     public function __construct()
     {
         $this->comment = new ArrayCollection();
+        $this->paniers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -206,6 +210,33 @@ class Produit
             if ($comment->getProduit() === $this) {
                 $comment->setProduit(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Panier>
+     */
+    public function getPaniers(): Collection
+    {
+        return $this->paniers;
+    }
+
+    public function addPanier(Panier $panier): static
+    {
+        if (!$this->paniers->contains($panier)) {
+            $this->paniers->add($panier);
+            $panier->addProduit($this);
+        }
+
+        return $this;
+    }
+
+    public function removePanier(Panier $panier): static
+    {
+        if ($this->paniers->removeElement($panier)) {
+            $panier->removeProduit($this);
         }
 
         return $this;
