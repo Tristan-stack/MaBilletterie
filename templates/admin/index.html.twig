@@ -1,0 +1,188 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AdminController!{% endblock %}
+
+{% block body %}
+
+<div class="container_all">
+
+
+    <div class="tabs_container">
+        <div class="admin_prof">
+            <div class="pp_more">
+                <img src="{{ asset('uploads/images/' ~ app.user.ImgProfil) }}" alt="Avatar" class="pp_admin">
+                {# <a href="{{ path('app_account') }}"><i class="bi bi-box-arrow-up-right"></i></a> #}
+            </div>
+            <h3><b>{{ app.user.pseudo }}</b></h3>
+        </div>
+
+        <div class="separat"></div>
+
+        <a href="#" class="tab" id="link1"><i class="bi bi-person-fill-gear"></i>Gestion Compte</a>
+        <a href="#" class="tab" id="link2"><i class="bi bi-ticket-detailed-fill"></i>Gestion Produit</a>
+        <a href="#" class="tab" id="link3">Links3</a>
+
+        <div class="separat"></div>
+
+        <div class="tabend_content"></div>
+    </div>
+
+    <i class="bi bi-info-circle"></i>
+
+    <div id="content1" class="tab-pane content">
+        <div class="content_delete" ondragover="event.preventDefault();" ondrop="drop(event)"
+            ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+            <i class="bi bi-trash"></i>
+        </div>
+        {% for user in users %}
+        {% if 'ROLE_ADMIN' not in user.roles %}
+        <div class="card" draggable="true" ondragstart="drag(event)" id="{{ user.id }}"
+            data-csrf-token="{{ csrf_token('delete' ~ user.id) }}" data-drop-zone=".content_delete">
+            <div class="container_card">
+                <i class="bi bi-grip-horizontal"></i>
+                <img src="{{ asset('uploads/images/' ~ user.ImgProfil) }}" alt="Avatar">
+                <h3><b>- {{ user.pseudo }} -</b></h3>
+                <p>{{ user.email }}</p>
+                <p>{{ user.roles[0] }}</p>
+
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div id="content2" class="tab-pane content" style="display: none;">
+        <a href="{{ path('app_produit_new') }}">
+            <div class="content_add">
+                <i class="bi bi-plus-lg"></i>
+            </div>
+        </a>
+        <div class="content_delete" ondragover="event.preventDefault();" ondrop="dropProduct(event)"
+            ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+            <i class="bi bi-trash"></i>
+        </div>
+
+        {% for produit in produits %}
+        <div class="card" draggable="true" ondragstart="drag(event)" id="product-{{ produit.id }}"
+            data-csrf-token="{{ csrf_token('delete' ~ produit.id) }}" data-drop-zone=".content_delete">
+            <div class="container_card">
+                <i class="bi bi-grip-horizontal"></i>
+                <img src="{{ asset('uploads/images/' ~ produit.ImgProduit) }}" alt="Avatar">
+                <h3><b>- {{ produit.titre }} -</b></h3>
+                <p>{{ produit.description }}</p>
+                <p>{{ produit.date|date('Y-m-d') }}</p>
+                <p>{{ produit.heure|date('H:i') }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="content3" class="tab-pane content" style="display: none;">
+        LIEN NUMERO 3 FONCTIONNE
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/toastify-js@1/src/toastify.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js@1/src/toastify.min.css">
+
+<script>
+
+    document.querySelectorAll('.tab').forEach(function (tab) {
+        tab.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            // Supprimez la classe 'active' de tous les onglets
+            document.querySelectorAll('.tab').forEach(function (el) {
+                el.classList.remove('active');
+            });
+
+            // Cachez tout le contenu des onglets et supprimez la classe 'active'
+            document.querySelectorAll('.tab-pane').forEach(function (el) {
+                el.style.display = 'none';
+                el.classList.remove('active');
+            });
+
+            // Ajoutez la classe 'active' à l'onglet sélectionné et affichez son contenu
+            this.classList.add('active');
+            var content = document.getElementById('content' + this.id.replace('link', ''));
+            content.style.display = 'flex';
+            content.style.justifyContent = 'space-around';
+            content.style.flexWrap = 'wrap';
+            content.style.width = '100%';
+            content.parentElement.classList.add('active');
+        });
+    });
+
+    function drag(event) {
+        event.dataTransfer.setData("text", event.target.id);
+        event.target.classList.add('grabbing');
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        var userId = event.dataTransfer.getData("text");
+        var userCard = document.getElementById(userId);
+        userCard.style.display = 'none'; // hide the user card
+        userCard.classList.remove('grabbing');
+
+        // Get the CSRF token from the data attribute
+        var csrfToken = userCard.getAttribute('data-csrf-token');
+
+        // Make an AJAX request to delete the user
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/admin/user/delete/" + userId, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("_method=DELETE&_token=" + encodeURIComponent(csrfToken));
+
+        // Reset the background color of the drop zone
+        document.querySelector('.content_delete').style.backgroundColor = '';
+    }
+
+    function dropProduct(event) {
+        event.preventDefault();
+        var productId = event.dataTransfer.getData("text");
+        var productCard = document.getElementById(productId);
+        productCard.style.display = 'none'; // hide the product card
+        productCard.classList.remove('grabbing');
+
+        // Get the CSRF token from the data attribute
+        var csrfToken = productCard.getAttribute('data-csrf-token');
+
+        // Make an AJAX request to delete the product
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/admin/product/delete/" + productId.replace('product-', ''), true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("_method=DELETE&_token=" + encodeURIComponent(csrfToken));
+
+        // Reset the background color of the drop zone
+        document.querySelector('.content_delete').style.backgroundColor = '';
+    }
+
+    function dragEnter(event) {
+        event.preventDefault();
+        // Change the background color of the drop zone
+        document.querySelector('.content_delete').style.backgroundColor = '#d62a2a';
+    }
+
+    function dragLeave(event) {
+        event.preventDefault();
+        // Reset the background color of the drop zone
+        document.querySelector('.content_delete').style.backgroundColor = '';
+    }
+
+    document.querySelector('.bi-info-circle').addEventListener('click', function () {
+        Toastify({
+            text: "Pour supprimer un compte, veuillez le glisser-déposer dans la poubelle !",
+            duration: 3000,
+            close: true,
+            gravity: "top", // `top` or `bottom`
+            position: 'center', // `left`, `center` or `right`
+            backgroundColor: "linear-gradient(to right, #fd286f, #6d1e9b)",
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            className: 'no-box-shadow',
+        }).showToast();
+    });
+
+</script>
+
+{% endblock %}

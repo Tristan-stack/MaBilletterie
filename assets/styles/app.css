@@ -1,3 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+* {
+    font-family: "Encode Sans Expanded", sans-serif;
+    font-size: 13px;
+    margin: 0;
+}
+
+body {
+    background: linear-gradient(to left, #1a1a1a, #272727);
+    color: #ffffff;
+}
+
 img {
     width: 200px;
+}
+
+.nav {
+    background: #252525;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    list-style: none;
+    height: 50px;
+    border-bottom: #ffffff91 1px solid;
+}
+
+.nav a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+/* Admin */
+
+.admin_prof {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.pp_more {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: start;
+}
+
+.pp_more i {
+    margin-left: 10px;
+}
+
+.pp_admin {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.separat {
+    width: 85%;
+    height: 1px;
+    border-bottom: 1px solid #ffffff2f;
+
+}
+
+.tabs_container {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 20%;
+}
+
+.tab {
+    border: 1px solid #ffffff67;
+    width: 75%;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 10px;
+    transition: .2s;
+}
+
+.tab:hover {
+    background: #fd286f;
+    transition: .2s;
+}
+
+.tabs_container a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.bi-person-fill-gear {
+    font-size: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.bi-ticket-detailed-fill {
+    font-size: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.container_all {
+    display: flex;
+    height: calc(100vh - 50px);
+}
+
+.tab-content {
+    display: none;
+    /* Par défaut, le contenu des onglets est caché */
+}
+
+.tab-content.active {
+    display: block;
+    /* Lorsque la classe 'active' est ajoutée, le contenu sera visible */
+}
+
+.tabend_content {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(to right, #fd286f, #8a00da);
+}
+
+.content {
+    /* background: #4fa0cf; */
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.card {
+    cursor: grab;
+}
+
+
+
+.container_card {
+    width: 220px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    color: #ffffff;
+    background-color: transparent;
+    border: 1px solid #9e9e9e;
+    border-radius: 15px;
+    word-wrap: break-word;
+}
+
+.container_card img {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+}
+
+.content_add {
+    width: 220px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    color: #ffffff;
+    background-color: transparent;
+    border: 1px solid #9e9e9e;
+    border-radius: 15px;
+    transition: .2s;
+}
+
+.content_add i {
+    font-size: 40px;
+}
+
+.content_delete {
+    width: 220px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    color: #ffffff;
+    background-color: transparent;
+    border: 1px solid #9e9e9e;
+    border-radius: 15px;
+    transition: .2s;
+}
+
+.content_delete i {
+    font-size: 35px;
+}
+
+.content_add:hover {
+    background-color: #27af15;
+    transition: .2s;
+}
+
+.content_delete:hover {
+    background-color: #d62a2a;
+    transition: .2s;
+}
+
+@keyframes info {
+
+    0%,
+    100% {
+        color: #ffffff;
+    }
+
+    50% {
+        color: #fd286f;
+    }
+}
+
+.bi-info-circle {
+    font-size: 20px;
+    margin-top: 10px;
+    margin-left: 20px;
+    animation: info 2s infinite;
+    cursor: pointer;
+}
+
+.no-box-shadow {
+    box-shadow: none !important;
 }

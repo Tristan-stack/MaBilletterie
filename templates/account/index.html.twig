@@ -10,6 +10,7 @@
 {# <img src="{{app.user.img_profil}}" alt=""> #}
 
 <p>Nom d'utilisateur : {{ app.user.pseudo }}</p>
+<img src="{{ asset('uploads/images/' ~ app.user.ImgProfil|default('default.png')) }}" alt="Image de profil">
 <p>Email : {{ app.user.email }}</p>
 <p>Role : {{ app.user.roles[0] }}</p>
 

@@ -1,16 +1,17 @@
 {% block menu %}
 
 <nav>
-    <ul>
+    <ul class="nav">
         <li><a href="{{path('app_home')}} ">Accueil</a></li>
         <li><a href="{{ path('app_produit_index') }}">Liste des produits</a></li>
         {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
-        <li><a href="{{ path('app_produit_new') }}">Ajouter un produit</a></li>
+        {# <li><a href="{{ path('app_produit_new') }}">Ajouter un produit</a></li> #}
+        <li><a href="{{ path('app_admin')}}">Back-office</a></li>
         {% endif %}
         {# si lutilisateur est connécté on affiche le lien logout #}
         {% if app.user %}
         <li><a href="{{ path('app_account') }}">Mon compte</a></li>
-        {% if app.user %}
+        {% if app.user and 'ROLE_ADMIN' not in app.user.roles %}
         <li><a href="{{ path('app_panier_index') }}">Panier</a></li>
         {% endif %}
         <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>

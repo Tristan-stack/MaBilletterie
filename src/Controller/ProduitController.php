@@ -204,4 +204,14 @@ class ProduitController extends AbstractController
 
         return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    // #[Route('/admin', name: 'admin_users')]
+    // public function listProduits(ProduitRepository $produitRepository): Response
+    // {
+    //     $produits = $produitRepository->findAll();
+
+    //     return $this->render('admin/index.html.twig', [
+    //         'produits' => $produits,
+    //     ]);
+    // }
 }

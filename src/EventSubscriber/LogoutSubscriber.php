@@ -32,14 +32,17 @@ class LogoutSubscriber implements EventSubscriberInterface
             // Récupérez le panier de l'utilisateur
             $panier = $user->getPanier();
 
-            // Supprimez tous les produits du panier
-            foreach ($panier->getProduits() as $produit) {
-                $panier->removeProduit($produit);
-            }
+            // Vérifiez si le panier existe
+            if ($panier) {
+                // Supprimez tous les produits du panier
+                foreach ($panier->getProduits() as $produit) {
+                    $panier->removeProduit($produit);
+                }
 
-            // Mettez à jour le panier dans la base de données
-            $this->entityManager->persist($panier);
-            $this->entityManager->flush();
+                // Mettez à jour le panier dans la base de données
+                $this->entityManager->persist($panier);
+                $this->entityManager->flush();
+            }
         }
     }
 }
