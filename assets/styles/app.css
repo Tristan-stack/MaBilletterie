@@ -56,7 +56,7 @@ img {
     width: 75px;
     height: 75px;
     border-radius: 50%;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .separat {
@@ -108,6 +108,20 @@ img {
     cursor: pointer;
 }
 
+.bi-bookmark-dash {
+    font-size: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+
+}
+
+.bi-calendar-fill {
+    font-size: 17px;
+    margin-right: 10px;
+    cursor: pointer;
+
+}
+
 .container_all {
     display: flex;
     height: calc(100vh - 50px);
@@ -126,7 +140,28 @@ img {
 .tabend_content {
     width: 100%;
     height: 150px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
     background: linear-gradient(to right, #fd286f, #8a00da);
+}
+
+.tabend_content a {
+    border: 1px solid #ffffff67;
+    width: 75%;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 10px;
+    transition: .2s;
+}
+
+.tabend_content a i {
+    font-size: 20px;
+    margin-right: 10px;
+    cursor: pointer;
 }
 
 .content {
@@ -233,3 +268,52 @@ img {
 .no-box-shadow {
     box-shadow: none !important;
 }
+
+.cat_description {
+    text-align: center;
+}
+
+#calendar {
+    width: 450px;
+    height: 450px;
+}
+
+.fc-event {
+    background-color: #fd286f !important;
+    border: none !important;
+    cursor: pointer;
+
+}
+
+.fc-button {
+    background-color: #fd286f94 !important;
+    border-color: #fd286f94 !important;
+    transition: .2s;
+}
+
+.fc-button:hover {
+    transition: .2s;
+    background-color: #fd286f !important;
+    border-color: #fd286f !important;
+}
+
+.fc-day-today {
+    background-color: #fd286f54 !important;
+}
+
+.fc-button:focus {
+    outline: 2px solid #fd286f54 !important;
+    border: none !important;
+}
+
+.calendar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -20px;
+}
+
+.calendar h2{
+    font-size: 30px;
+}
+

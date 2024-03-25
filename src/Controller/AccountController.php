@@ -10,7 +10,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\User;
 use App\Entity\Produit;
+use App\Entity\Category;
 use App\Repository\ProduitRepository;
+use App\Repository\CategoryRepository;
 
 class AccountController extends AbstractController
 {
@@ -23,14 +25,16 @@ class AccountController extends AbstractController
     }
 
     #[Route('/admin', name: 'admin_users')]
-    public function listUsers(UserRepository $userRepository, ProduitRepository $produitRepository): Response
+    public function listUsers(UserRepository $userRepository, ProduitRepository $produitRepository, CategoryRepository $categoryRepository): Response
     {
         $users = $userRepository->findAll();
         $produits = $produitRepository->findAll();
+        $categories = $categoryRepository->findAll();
 
         return $this->render('admin/index.html.twig', [
             'users' => $users,
             'produits' => $produits,
+            'categories' => $categories,
         ]);
     }
 
@@ -61,4 +65,27 @@ class AccountController extends AbstractController
 
         return $this->redirectToRoute('app_produit_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/admin/category/delete/{id}', name: 'admin_category_delete', methods: ['POST'])]
+    public function deleteCategory(Request $request, Category $category, EntityManagerInterface $entityManager): Response
+    {
+        if (!$category) {
+            throw $this->createNotFoundException('La catégorie demandée n\'existe pas');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
+            // Detach all products from the category
+            foreach ($category->getProduits() as $product) {
+                $product->setCategory(null);
+                $entityManager->persist($product);
+            }
+
+            $entityManager->remove($category);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('admin_users', [], Response::HTTP_SEE_OTHER);
+    }
+
+
 }

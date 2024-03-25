@@ -18,13 +18,17 @@
 
         <div class="separat"></div>
 
-        <a href="#" class="tab" id="link1"><i class="bi bi-person-fill-gear"></i>Gestion Compte</a>
-        <a href="#" class="tab" id="link2"><i class="bi bi-ticket-detailed-fill"></i>Gestion Produit</a>
-        <a href="#" class="tab" id="link3">Links3</a>
+        <a href="#" class="tab" id="link1"><i class="bi bi-person-fill-gear"></i>Gestion Comptes</a>
+        <a href="#" class="tab" id="link2"><i class="bi bi-ticket-detailed-fill"></i>Gestion Produits</a>
+        <a href="#" class="tab" id="link3"><i class="bi bi-bookmark-dash"></i>Categories</a>
+        <a href="#" class="tab" id="link4"><i class="bi bi-calendar-fill"></i>Calendrier</a>
 
         <div class="separat"></div>
 
-        <div class="tabend_content"></div>
+        <div class="tabend_content">
+            <a href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
+            <a href=""><i class="bi bi-house"></i> Accueil</a>
+        </div>
     </div>
 
     <i class="bi bi-info-circle"></i>
@@ -78,12 +82,42 @@
     </div>
 
     <div id="content3" class="tab-pane content" style="display: none;">
-        LIEN NUMERO 3 FONCTIONNE
+        <a href="{{ path('category_new') }}">
+            <div class="content_add">
+                <i class="bi bi-plus-lg"></i>
+            </div>
+        </a>
+
+        <div class="content_delete" ondragover="event.preventDefault();" ondrop="dropCategory(event)"
+            ondragenter="dragEnter(event)" ondragleave="dragLeave(event)">
+            <i class="bi bi-trash"></i>
+        </div>
+
+        {% for categorie in categories %}
+        <div class="card" draggable="true" ondragstart="drag(event)" id="category-{{ categorie.id }}"
+            data-csrf-token="{{ csrf_token('delete' ~ categorie.id) }}" data-drop-zone=".content_delete">
+            <div class="container_card">
+                <i class="bi bi-grip-horizontal"></i>
+                <h3><b>- {{ categorie.titre }} -</b></h3>
+                <p class="cat_description">{{ categorie.description }}</p>
+                <p>{{ categorie.NbProduit|default(0) }} produit dans {{ categorie.titre }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="content4" class="tab-pane content calendar" style="display: none;">
+        <h2>Calendrier d'événements</h2>
+        <div id="calendar"></div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/toastify-js@1/src/toastify.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js@1/src/toastify.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<link href='https://fullcalendar.io/releases/main/base.css' rel='stylesheet' />
+<link href='https://fullcalendar.io/releases/main/main.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/fr.min.js"></script>
 
 <script>
 
@@ -158,6 +192,26 @@
         document.querySelector('.content_delete').style.backgroundColor = '';
     }
 
+    function dropCategory(event) {
+        event.preventDefault();
+        var categoryId = event.dataTransfer.getData("text");
+        var categoryCard = document.getElementById(categoryId);
+        categoryCard.style.display = 'none'; // hide the category card
+        categoryCard.classList.remove('grabbing');
+
+        // Get the CSRF token from the data attribute
+        var csrfToken = categoryCard.getAttribute('data-csrf-token');
+
+        // Make an AJAX request to delete the category
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/admin/category/delete/" + categoryId, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("_method=DELETE&_token=" + encodeURIComponent(csrfToken));
+
+        // Reset the background color of the drop zone
+        document.querySelector('.content_delete').style.backgroundColor = '';
+    }
+
     function dragEnter(event) {
         event.preventDefault();
         // Change the background color of the drop zone
@@ -169,20 +223,65 @@
         // Reset the background color of the drop zone
         document.querySelector('.content_delete').style.backgroundColor = '';
     }
+    document.getElementById('link1').click();
+    
+    document.querySelectorAll('.bi-info-circle').forEach(function (infoButton) {
+        infoButton.addEventListener('click', function () {
+            var activeTabId = document.querySelector('.tab.active').id;
+            var message = "Pour supprimer un élément, veuillez le glisser-déposer dans la poubelle !";
 
-    document.querySelector('.bi-info-circle').addEventListener('click', function () {
-        Toastify({
-            text: "Pour supprimer un compte, veuillez le glisser-déposer dans la poubelle !",
-            duration: 3000,
-            close: true,
-            gravity: "top", // `top` or `bottom`
-            position: 'center', // `left`, `center` or `right`
-            backgroundColor: "linear-gradient(to right, #fd286f, #6d1e9b)",
-            stopOnFocus: true, // Prevents dismissing of toast on hover
-            className: 'no-box-shadow',
-        }).showToast();
+            if (activeTabId === 'link4') {
+                message = "Calendrier d'événements prévu.";
+            }
+
+            Toastify({
+                text: message,
+                duration: 3000,
+                close: true,
+                gravity: "top", // `top` or `bottom`
+                position: 'center', // `left`, `center` or `right`
+                backgroundColor: "linear-gradient(to right, #fd286f, #6d1e9b)",
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                className: 'no-box-shadow',
+            }).showToast();
+        });
+    });
+
+    var productDates = {{ produits| map(product => { 'date': product.date | date('Y-m-d'), 'title': product.titre, 'url': path('app_produit_show', { 'id': product.id }) }) | json_encode | raw }};
+
+    document.getElementById('link4').addEventListener('click', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            themeSystem: 'bootstrap',
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'dayGridMonth'
+            },
+            events: productDates.map(function (product) {
+                return {
+                    title: product.title,
+                    start: product.date,
+                    url: product.url,
+                };
+            }),
+            eventClick: function(info) {
+                window.open(info.event.url, '_blank');
+                info.jsEvent.preventDefault();
+            },
+            locale: 'fr',
+            buttonText: {
+                month: 'Mois', 
+            },
+        });
+
+        calendar.render();
     });
 
 </script>
+
+
 
 {% endblock %}

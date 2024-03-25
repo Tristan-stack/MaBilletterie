@@ -73,7 +73,7 @@ class ProduitController extends AbstractController
 
 
     #[Route('/new', name: 'app_produit_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, ProduitRepository $produitRepository): Response
     {
         $produit = new Produit();
         $form = $this->createForm(ProduitType::class, $produit);
@@ -89,7 +89,8 @@ class ProduitController extends AbstractController
 
             // Augmenter le nb_produit de la catégorie
             $category = $produit->getCategory();
-            $category->setNbProduit($category->getNbProduit() + 1);
+            $nbProduits = $produitRepository->count(['category' => $category]) + 1;
+            $category->setNbProduit($nbProduits);
 
             /** @var UploadedFile $imageFile */
             $imageFile = $form['image']->getData();
@@ -189,7 +190,7 @@ class ProduitController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_produit_delete', methods: ['POST'])]
-    public function delete(Request $request, Produit $produit, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Produit $produit, EntityManagerInterface $entityManager, ProduitRepository $produitRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $produit->getId(), $request->request->get('_token'))) {
             // Supprime le fichier associé à l'entité
@@ -197,6 +198,10 @@ class ProduitController extends AbstractController
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
+
+            $category = $produit->getCategory();
+            $nbProduits = $produitRepository->count(['category' => $category]) - 1;
+            $category->setNbProduit($nbProduits);
 
             $entityManager->remove($produit);
             $entityManager->flush();
